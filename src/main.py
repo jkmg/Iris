@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import pickle
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
 
 st.write("""
 # Iris plants Prediction App
@@ -19,27 +19,16 @@ if uploaded_file is not None:
     input = pd.read_csv(uploaded_file)
 else:
     def user_input_features():
-        sepal_lenght_cm = st.sidebar.slider('Sepal length (cm)', 0.0,10.0,5.1)
-        sepal_width_cm = st.sidebar.slider('Sepal width (cm)', 0.0,5.0,3.5)
-        petal_width_cm = st.sidebar.slider('Petal length (cm)', 0.0,5.0,0.2)
-        data = {'sepal_length_cm': sepal_lenght_cm,
-                'sepal_width_cm': sepal_width_cm,
-                'petal_width_cm': petal_width_cm}
+        SepalLengthCm = st.sidebar.slider('Sepal length (cm)', 0.0,10.0,5.1)
+        SepalWidthCm = st.sidebar.slider('Sepal width (cm)', 0.0,5.0,3.5)
+        PetalWidthCm = st.sidebar.slider('Petal width (cm)', 0.0,5.0,0.2)
+        data = {'SepalLengthCm': SepalLengthCm,
+                'SepalWidthCm': SepalWidthCm,
+                'PetalWidthCm': PetalWidthCm}
         features = pd.DataFrame(data, index=[0])
         return features
     input = user_input_features()
 
-# Combines user input features with entire Iris dataset. Useful for the encoding phase
-#iris_raw = pd.read_csv("https://raw.githubusercontent.com/jkmg/Iris/main/Iris.csv", delimiter = ",")
-#iris = iris_raw.drop(columns=['Id','PetalLengthCm','Species'], axis=1)
-#df = pd.concat([input,iris],axis=0)
-
-# Encoding of ordinal features
-#encode = ['Species']
-#for col in encode:
-#    dummy = pd.get_dummies(df[col], prefix=col)
-#    df = pd.concat([df,dummy], axis=1)
-#    del df[col]
 df = input[:1] # Selects only the first row (the user input data)
 
 # Displays the user input features
@@ -51,16 +40,15 @@ else:
     st.write('Awaiting CSV file to be uploaded. Currently using example input parameters (shown below).')
     st.write(df)
 
-# Reads in saved classification model
-load_rf = pickle.load(open('iris_rf.pkl', 'rb'))
+# Load Logistic Regression classification model
+load_lr = pickle.load(open('iris_lr.pkl', 'rb'))
+# Logistic Regression Prediction
+prediction_lr = load_lr.predict(df)
+prediction_proba_lr = load_lr.predict_proba(df)
 
-# Predict
-prediction = load_rf.predict(df)
-prediction_proba = load_rf.predict_proba(df)
-
-st.subheader('Prediction')
+st.subheader('Logistic Regression Prediction')
 iris_species = np.array(['Iris-setosa','Iris-versicolor','Iris-virginica'])
-st.write(iris_species[prediction])
+st.write(iris_species[prediction_lr])
 
-st.subheader('Prediction Probability')
-st.write(prediction_proba)
+st.subheader('Logistic Regression Prediction Probability')
+st.write(prediction_proba_lr)
