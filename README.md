@@ -9,5 +9,3 @@
 ### 4. "conda install pip"
 ### 5. "pip install -r requirements.txt"
 ### 6. "streamlit run src/main.py"
-
-## Dataset used for model generation can be found in Iris.csv
